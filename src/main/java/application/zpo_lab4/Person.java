@@ -2,14 +2,26 @@ package application.zpo_lab4;
 // application.zpo_lab4.Person
 public class Person {
     public Person() {
+        this("Imie","Nazwisko",40,50.,"111111111","Opis",false);
     }
+
+    public Person(String name, String surName, Integer age, Double weight, String phoneNumber, String textDescription, boolean employed) {
+        this.name = name;
+        this.surName = surName;
+        this.age = age;
+        this.weight = weight;
+        this.phoneNumber = phoneNumber;
+        this.textDescription = textDescription;
+        this.employed = employed;
+    }
+
     private String name;
     private String surName;
     private Integer age;
     private Double weight;
-    private Integer phoneNumber;
-    private String textDescription;
+    private String phoneNumber;
     private Boolean employed;
+    private String textDescription;
 
     public String getName() {
         return name;
@@ -43,11 +55,11 @@ public class Person {
         this.weight = weight;
     }
 
-    public Integer getPhoneNumber() {
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(Integer phoneNumber) {
+    public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 
