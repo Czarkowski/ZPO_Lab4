@@ -34,12 +34,31 @@ public class FConteiner {
 
     EnumType enumType;
 
-    public EnumType SetEnumType(Class<?> type){
+    public EnumType setEnumType(Class<?> type){
         this.type = type;
-        if (type == Integer.class) {
+        System.out.println(type.toString());
+//        System.out.println(type.getClass().toString());
+//        System.out.println(int.class.toString());
+        if (type == String.class) {
+            enumType = EnumType.String;
+        } else if (type == Integer.class) {
             enumType = EnumType.Integer;
-            System.out.println("integer");
+        }else if (type == Double.class) {
+            enumType = EnumType.Double;
+        }else if (type == Float.class) {
+            enumType = EnumType.Float;
+        }else if (type == Long.class) {
+            enumType = EnumType.Long;
+        }else if (type == Character.class) {
+            enumType = EnumType.Character;
+        }else if (type == Boolean.class) {
+            enumType = EnumType.Boolean;
+        }else if (type == Byte.class) {
+            enumType = EnumType.Byte;
+        }else {
+            System.out.println("Brak dopasowania typu!");
         }
+
         return enumType;
     }
 
