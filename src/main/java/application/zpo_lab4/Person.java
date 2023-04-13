@@ -17,10 +17,10 @@ public class Person {
 
     private String name;
     private String surName;
-    private Integer age;
+    private int age;
     private Double weight;
     private String phoneNumber;
-    private Boolean employed;
+    private boolean employed;
     private String textDescription;
 
     public String getName() {
@@ -39,11 +39,11 @@ public class Person {
         this.surName = surName;
     }
 
-    public Integer getAge() {
+    public int getAge() {
         return age;
     }
 
-    public void setAge(Integer age) {
+    public void setAge(int age) {
         this.age = age;
     }
 
@@ -71,11 +71,11 @@ public class Person {
         this.textDescription = textDescription;
     }
 
-    public Boolean getEmployed() {
+    public boolean getEmployed() {
         return employed;
     }
 
-    public void setEmployed(Boolean employed) {
+    public void setEmployed(boolean employed) {
         this.employed = employed;
     }
 }

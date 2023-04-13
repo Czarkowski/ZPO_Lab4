@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.VBox;
 
 import java.lang.reflect.Constructor;
@@ -26,7 +27,7 @@ public class ReflectionController {
     VBox vBox;
 
     List<FConteiner> fConteinerList = new ArrayList<>();
-    Class clazz = null;
+    Class<?> clazz = null;
 
     Object object;
     @FXML
@@ -36,28 +37,21 @@ public class ReflectionController {
 
         clazz = Class.forName(clazzName);
 
-        Constructor constructor = clazz.getConstructor();
+        Constructor<?> constructor = clazz.getConstructor();
         object = constructor.newInstance();
         Field[] declaredFields = clazz.getDeclaredFields();
         System.out.println(clazz!=null);
 
         fConteinerList.clear();
         Method[] methods = clazz.getMethods();
-        for (var i:declaredFields) {
-            System.out.println(i.getName());
-            FConteiner fConteiner = new FConteiner(i.getName());
+        for (Field f:declaredFields) {
+            System.out.println(f.getName());
+
+            FConteiner fConteiner = FConteiner.MakeFieldConteiner(f,clazz,object);
+
             fConteinerList.add(fConteiner);
             vBox.getChildren().add(fConteiner.hBox);
-            String Name = fConteiner.name.substring(0,1).toUpperCase() + fConteiner.name.substring(1);
-            Method method = clazz.getMethod("get" + Name, null);
-            Class<?> returnType = method.getReturnType();
 
-            fConteiner.setEnumType(returnType);
-            fConteiner.methodGet = method;
-            method = clazz.getMethod("set" + Name, fConteiner.type);
-            fConteiner.methodSet = method;
-
-            fConteiner.textField.setText(fConteiner.methodGet.invoke(object).toString());
         }
 
         for (Method m: methods) {
@@ -77,7 +71,7 @@ public class ReflectionController {
     protected void onBtnSaveClick() {
         fConteinerList.forEach(fConteiner ->{
             try {
-                fConteiner.methodSet.invoke(object,fConteiner.textField.getText());
+                fConteiner.methodSet.invoke(object,((TextInputControl)fConteiner.control).getText());
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
