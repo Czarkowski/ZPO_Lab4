@@ -1,16 +1,12 @@
 package application.zpo_lab4;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,78 +22,56 @@ public class ReflectionController {
     @FXML
     VBox vBox;
 
-    List<FConteiner> fConteinerList = new ArrayList<>();
-    Class<?> clazz = null;
-
+    List<FContainer> fContainerList = new ArrayList<>();
+    Class<?> clazz;
     Object object;
+
     @FXML
-    protected void onBtnCreateClick() throws NoSuchMethodException, ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
-        String clazzName = className.getText();
+    protected void onBtnCreateClick() {
+        vBox.getChildren().clear();
+        fContainerList.clear();
         clazz = null;
+        object = null;
 
-        clazz = Class.forName(clazzName);
-
-        Constructor<?> constructor = clazz.getConstructor();
-        object = constructor.newInstance();
+        String clazzName = className.getText();
+        boolean isClass = false;
+        try {
+            clazz = Class.forName(clazzName);
+            Constructor<?> constructor = clazz.getConstructor();
+            object = constructor.newInstance();
+            isClass = true;
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+        }
+        if (!isClass)
+            return;
         Field[] declaredFields = clazz.getDeclaredFields();
-        System.out.println(clazz!=null);
 
-        fConteinerList.clear();
-        Method[] methods = clazz.getMethods();
-        for (Field f:declaredFields) {
+        for (Field f : declaredFields) {
             System.out.println(f.getName());
 
-            FConteiner fConteiner = FConteiner.MakeFieldConteiner(f,clazz,object);
-
-            fConteinerList.add(fConteiner);
-            vBox.getChildren().add(fConteiner.hBox);
-
+            FContainer fContainer = FContainer.MakeFieldContainer(f, clazz);
+            if (fContainer == null) {
+                System.out.println("Cannot create FContainer object for field: " + f.getName());
+                continue;
+            }
+            fContainer.setControlValueFromObject(object);
+            fContainerList.add(fContainer);
+            vBox.getChildren().add(fContainer.hBox);
         }
-
-        for (Method m: methods) {
-            //System.out.println(m.getName() + " parametry :"+ Arrays.toString(m.getParameters()) + "  " + Arrays.toString(m.getParameterTypes()) + "   " + m.getReturnType());
-
-        }
-
-//        Class[] parameterType = null;
-//        clazz.getMethod("setName",String.class);
-
-
-
-
 
     }
+
     @FXML
     protected void onBtnSaveClick() {
-        fConteinerList.forEach(fConteiner ->{
-            try {
-                fConteiner.methodSet.invoke(object,((TextInputControl)fConteiner.control).getText());
-            } catch (IllegalAccessException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
-                throw new RuntimeException(e);
+        consoleTextArea.clear();
+        fContainerList.forEach(fContainer ->{
+            if (!fContainer.setFieldValueForObject(object)){
+                consoleTextArea.appendText("The property " + fContainer.name + " was not changed successfully!\n");
             }
+            consoleTextArea.appendText(fContainer.name+ " = "+ fContainer.getFieldValueFromObject(object).toString()+"\n");
         });
     }
-    protected void setNewValue(FConteiner fConteiner){
-        switch (fConteiner.enumType){
-            case Integer:
-        }
-    }
+
 }
-
-
-//    StringBuilder methodNameStringBuilder = new StringBuilder();
-//            methodNameStringBuilder.append("set");
-//                    methodNameStringBuilder.append(hBoxConteiner.name.substring(0,1).toUpperCase());
-//                    System.out.println(methodNameStringBuilder.toString());
-//                    methodNameStringBuilder.append(hBoxConteiner.name.substring(1));
-//                    String metodName = methodNameStringBuilder.toString();
-//                    System.out.println(metodName);
-//                    Method method = null;
-//                    try {
-//                    method = clazz.getMethod(metodName);
-//                    } catch (NoSuchMethodException e) {
-//                    throw new RuntimeException(e);
-//                    }
-//                    consoleTextArea.appendText(method.getName());
