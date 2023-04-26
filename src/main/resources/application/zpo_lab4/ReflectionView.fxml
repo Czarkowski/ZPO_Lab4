@@ -5,7 +5,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -26,5 +25,4 @@
       </content>
    </ScrollPane>
    <TextArea fx:id="consoleTextArea" prefHeight="200.0" prefWidth="200.0" />
- <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="80.0" prefWidth="680.0" />
 </VBox>

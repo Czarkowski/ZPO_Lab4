@@ -15,12 +15,23 @@ public class Person {
         this.employed = employed;
     }
 
+
+    @MyPattern(regex="[A-Z][a-z]+", message = "To nie jest imie!")
     private String name;
     private String surName;
+
+    @MyPattern(regex="\\d+", message = "Tylko cyfry")
+
     private int age;
     private Double weight;
+
+    @MyPattern(regex=".{9,}", message = "Za mało!")
+    @MyPattern(regex="\\d+", message = "Tylko cyfry")
     private String phoneNumber;
     private boolean employed;
+
+    @MyPattern(regex="\\w{10,}", message = "min 10 znaków!")
+
     private String textDescription;
 
     public String getName() {

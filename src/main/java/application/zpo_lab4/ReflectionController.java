@@ -27,6 +27,11 @@ public class ReflectionController {
     Object object;
 
     @FXML
+    protected void initialize(){
+        //btnSave.setDisable(true);
+    }
+
+    @FXML
     protected void onBtnCreateClick() {
         vBox.getChildren().clear();
         fContainerList.clear();
@@ -40,7 +45,8 @@ public class ReflectionController {
             Constructor<?> constructor = clazz.getConstructor();
             object = constructor.newInstance();
             isClass = true;
-        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | InstantiationException |
+                 IllegalAccessException e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
         }
@@ -56,21 +62,36 @@ public class ReflectionController {
                 System.out.println("Cannot create FContainer object for field: " + f.getName());
                 continue;
             }
+            if (fContainer.vinputText != null) {
+                fContainer.vinputText.setUpdate(this::refreshBtn);
+            }
             fContainer.setControlValueFromObject(object);
             fContainerList.add(fContainer);
             vBox.getChildren().add(fContainer.hBox);
         }
+        refreshBtn();
+    }
 
+    public void refreshBtn() {
+        for( FContainer fContainer : fContainerList){
+            if (fContainer.vinputText != null) {
+                if (!fContainer.vinputText.isGood()) {
+                    btnSave.setDisable(true);
+                    return;
+                }
+            }
+        }
+     btnSave.setDisable(false);
     }
 
     @FXML
     protected void onBtnSaveClick() {
         consoleTextArea.clear();
-        fContainerList.forEach(fContainer ->{
-            if (!fContainer.setFieldValueForObject(object)){
+        fContainerList.forEach(fContainer -> {
+            if (!fContainer.setFieldValueForObject(object)) {
                 consoleTextArea.appendText("The property " + fContainer.name + " was not changed successfully!\n");
             }
-            consoleTextArea.appendText(fContainer.name+ " = "+ fContainer.getFieldValueFromObject(object).toString()+"\n");
+            consoleTextArea.appendText(fContainer.name + " = " + fContainer.getFieldValueFromObject(object).toString() + "\n");
         });
     }
 

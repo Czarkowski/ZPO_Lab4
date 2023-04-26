@@ -1,6 +1,7 @@
 package application.zpo_lab4;
 
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 import java.lang.reflect.Field;
@@ -20,6 +21,8 @@ enum EnumType {
 }
 
 public class FContainer {
+
+    VinputText vinputText;
     public static FContainer MakeFieldContainer(Field f, Class<?> c) {
         String name = f.getName();
         Class<?> fieldType = f.getType();
@@ -51,11 +54,29 @@ public class FContainer {
         FContainer fContainer = null;
         fContainer = new FContainer(name, c, fieldType, enumType, methodSet, methodGet);
 
+        if (enumType != EnumType.Boolean && (f.isAnnotationPresent(MyPatterns.class)||f.isAnnotationPresent(MyPattern.class))){
+            fContainer.imageView = new ImageView();
+            fContainer.imageView.setFitHeight(20.);
+            fContainer.imageView.setFitWidth(20.);
+            fContainer.hBox.getChildren().add(0, fContainer.imageView);
+            fContainer.vinputText = new VinputText((TextInputControl) fContainer.control,fContainer.imageView);
+            if (f.isAnnotationPresent(MyPatterns.class)) {
+                MyPatterns annotations = f.getAnnotation(MyPatterns.class);
+                for (MyPattern mp : annotations.value()) {
+                    fContainer.vinputText.registerValidator(new MyPatternValidator(mp));
+                }
+
+            } else if (f.isAnnotationPresent(MyPattern.class)) {
+                fContainer.vinputText.registerValidator(new MyPatternValidator(f.getAnnotation(MyPattern.class)));
+            }
+        }
         return fContainer;
     }
 
     String name;
     HBox hBox;
+
+    ImageView imageView;
     private Label label;
     private Class<?> objectType;
     private Control control;
@@ -106,11 +127,14 @@ public class FContainer {
         if (enumType == EnumType.Boolean) {
             this.control = new CheckBox();
         } else {
+
             if (name.startsWith("text"))
                 this.control = new TextArea();
             else
                 this.control = new TextField();
         }
+
+
         hBox.getChildren().add(control);
         hBox.getChildren().add(label);
     }
